@@ -9,7 +9,7 @@ use crate::state::{config, config_read, State};
 pub fn init<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     env: Env,
-    msg: InitMsg,
+    _msg: InitMsg,
 ) -> StdResult<InitResponse> {
     let state = State {
         sum : 0,
@@ -27,7 +27,7 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
     msg: HandleMsg,
 ) -> StdResult<HandleResponse> {
     match msg {
-        HandleMsg::add { v1, v2 } => try_add(deps, env,v1,v2),
+        HandleMsg::Add { v1, v2 } => try_add(deps, env,v1,v2),
     }
 }
 
@@ -70,7 +70,7 @@ pub fn query<S: Storage, A: Api, Q: Querier>(
 
 fn query_sum<S: Storage, A: Api, Q: Querier>(deps: &Extern<S, A, Q>) -> StdResult<SumResponse> {
     let state = config_read(&deps.storage).load()?;
-    Ok(SumResponse { Sum: state.sum })
+    Ok(SumResponse { sum: state.sum })
 }
 
 #[cfg(test)]
