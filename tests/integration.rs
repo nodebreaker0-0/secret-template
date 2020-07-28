@@ -20,10 +20,10 @@
 use cosmwasm_std::{coins, from_binary, HandleResponse, HandleResult, InitResponse, StdError};
 use cosmwasm_vm::testing::{handle, init, mock_env, mock_instance, query};
 
-use {{crate_name}}::msg::{CountResponse, HandleMsg, InitMsg, QueryMsg};
+use my_secret_token::msg::{CountResponse, HandleMsg, InitMsg, QueryMsg};
 
 // This line will test the output of cargo wasm
-static WASM: &[u8] = include_bytes!("../target/wasm32-unknown-unknown/release/{{crate_name}}.wasm");
+static WASM: &[u8] = include_bytes!("../target/wasm32-unknown-unknown/release/my_secret_token.wasm");
 // You can uncomment this line instead to test productionified build from rust-optimizer
 // static WASM: &[u8] = include_bytes!("../contract.wasm");
 
@@ -36,12 +36,12 @@ fn proper_initialization() {
 
     // we can just call .unwrap() to assert this was a success
     let res: InitResponse = init(&mut deps, env, msg).unwrap();
-    assert_eq!(res.messages.len(), 0);
+    assert_eq!(0, res.messages.len());
 
     // it worked, let's query the state
     let res = query(&mut deps, QueryMsg::GetCount {}).unwrap();
     let value: CountResponse = from_binary(&res).unwrap();
-    assert_eq!(value.count, 17);
+    assert_eq!(17, value.count);
 }
 
 #[test]
@@ -60,7 +60,7 @@ fn increment() {
     // should increase counter by 1
     let res = query(&mut deps, QueryMsg::GetCount {}).unwrap();
     let value: CountResponse = from_binary(&res).unwrap();
-    assert_eq!(value.count, 18);
+    assert_eq!(18, value.count);
 }
 
 #[test]
@@ -88,5 +88,5 @@ fn reset() {
     // should now be 5
     let res = query(&mut deps, QueryMsg::GetCount {}).unwrap();
     let value: CountResponse = from_binary(&res).unwrap();
-    assert_eq!(value.count, 5);
+    assert_eq!(5, value.count);
 }
