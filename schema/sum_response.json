@@ -1,12 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "CountResponse",
+  "title": "SumResponse",
   "type": "object",
   "required": [
-    "count"
+    "Sum"
   ],
   "properties": {
-    "count": {
+    "Sum": {
       "type": "integer",
       "format": "int32"
     }
