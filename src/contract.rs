@@ -1,5 +1,5 @@
 use cosmwasm_std::{
-    to_binary, Api, Binary, Env, Extern, HandleResponse, InitResponse, Querier, StdError,
+    to_binary, Api, Binary, Env, Extern, HandleResponse, InitResponse, Querier,
     StdResult, Storage,
 };
 
@@ -8,56 +8,43 @@ use crate::state::{config, config_read, State};
 
 pub fn init<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
-    env: Env,
+    _env: Env,
     _msg: InitMsg,
 ) -> StdResult<InitResponse> {
-    let state = State {
-        sum : 0,
-        owner: env.message.sender,
+    let state = State{
+        v1: 0,
+        v2: 0,
+        sum: 0,
     };
-
     config(&mut deps.storage).save(&state)?;
-
     Ok(InitResponse::default())
 }
 
 pub fn handle<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
-    env: Env,
+    _env: Env,
     msg: HandleMsg,
 ) -> StdResult<HandleResponse> {
     match msg {
-        HandleMsg::Add { v1, v2 } => try_add(deps, env,v1,v2),
+        HandleMsg::Add { v1, v2 } => try_add(deps, v1,v2),
     }
 }
 
 pub fn try_add<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
-    _env: Env,
     v1: i32,
     v2: i32,
 ) -> StdResult<HandleResponse> {
     config(&mut deps.storage).update(|mut state| {
-        state.sum = v1 + v2;
+        state.v1 = v1;
+        state.v2 = v2;
+        state.sum = state.v1 + state.v2;
         Ok(state)
     })?;
 
     Ok(HandleResponse::default())
 }
 
-pub fn try_reset<S: Storage, A: Api, Q: Querier>(
-    deps: &mut Extern<S, A, Q>,
-    env: Env,
-) -> StdResult<HandleResponse> {
-    config(&mut deps.storage).update(|mut state| {
-        if env.message.sender != state.owner {
-            return Err(StdError::Unauthorized { backtrace: None });
-        }
-        state.sum = 0;
-        Ok(state)
-    })?;
-    Ok(HandleResponse::default())
-}
 
 pub fn query<S: Storage, A: Api, Q: Querier>(
     deps: &Extern<S, A, Q>,
@@ -97,10 +84,10 @@ mod tests {
     }
 
     #[test]
-    fn increment() {
+    fn try_add() {
         let mut deps = mock_dependencies(20, &coins(2, "token"));
 
-        let msg = InitMsg { count: 17 };
+        let msg = InitMsg {};
         let env = mock_env(&deps.api, "creator", &coins(2, "token"));
         let _res = init(&mut deps, env, msg).unwrap();
 
@@ -113,33 +100,5 @@ mod tests {
         let res = query(&deps, QueryMsg::GetCount {}).unwrap();
         let value: CountResponse = from_binary(&res).unwrap();
         assert_eq!(18, value.count);
-    }
-
-    #[test]
-    fn reset() {
-        let mut deps = mock_dependencies(20, &coins(2, "token"));
-
-        let msg = InitMsg { count: 17 };
-        let env = mock_env(&deps.api, "creator", &coins(2, "token"));
-        let _res = init(&mut deps, env, msg).unwrap();
-
-        // beneficiary can release it
-        let unauth_env = mock_env(&deps.api, "anyone", &coins(2, "token"));
-        let msg = HandleMsg::Reset { count: 5 };
-        let res = handle(&mut deps, unauth_env, msg);
-        match res {
-            Err(StdError::Unauthorized { .. }) => {}
-            _ => panic!("Must return unauthorized error"),
-        }
-
-        // only the original creator can reset the counter
-        let auth_env = mock_env(&deps.api, "creator", &coins(2, "token"));
-        let msg = HandleMsg::Reset { count: 5 };
-        let _res = handle(&mut deps, auth_env, msg).unwrap();
-
-        // should now be 5
-        let res = query(&deps, QueryMsg::GetCount {}).unwrap();
-        let value: CountResponse = from_binary(&res).unwrap();
-        assert_eq!(5, value.count);
     }
 }

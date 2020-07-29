@@ -1,15 +1,16 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use cosmwasm_std::{CanonicalAddr, Storage};
+use cosmwasm_std::{ Storage};
 use cosmwasm_storage::{singleton, singleton_read, ReadonlySingleton, Singleton};
 
 pub static CONFIG_KEY: &[u8] = b"config";
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct State {
-    pub sum : i32,
-    pub owner: CanonicalAddr,
+    pub v1: i32,
+    pub v2: i32,
+    pub sum: i32,
 }
 
 pub fn config<S: Storage>(storage: &mut S) -> Singleton<S, State> {
