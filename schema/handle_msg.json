@@ -5,27 +5,21 @@
     {
       "type": "object",
       "required": [
-        "increment"
+        "add"
       ],
       "properties": {
-        "increment": {
-          "type": "object"
-        }
-      }
-    },
-    {
-      "type": "object",
-      "required": [
-        "reset"
-      ],
-      "properties": {
-        "reset": {
+        "add": {
           "type": "object",
           "required": [
-            "count"
+            "v1",
+            "v2"
           ],
           "properties": {
-            "count": {
+            "v1": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "v2": {
               "type": "integer",
               "format": "int32"
             }
