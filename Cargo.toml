@@ -1,7 +1,7 @@
 [package]
-name = "{{project-name}}"
+name = "task2add"
 version = "0.1.0"
-authors = ["{{authors}}"]
+authors = ["B-Harvset"]
 edition = "2018"
 
 exclude = [
