@@ -21,7 +21,7 @@ cargo install cargo-generate --features vendored-openssl
 ```
 
 Now, use it to create your new contrac.
-Go to the folder in which you want to place it and run:
+Go to the folder in which you want to place it and run2:
 
 **0.9 (latest)**
 
